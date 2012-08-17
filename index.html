@@ -1,0 +1,16 @@
+<html>
+<head>
+    <title>Indebted</title>
+</head>
+<body>
+<ul>
+    {% for guy in indebted %}
+    <li>
+        {{ guy.name }}
+        {{ guy.email }}
+        {{ guy.debt }}
+    </li>
+    {% endfor %}
+</ul>
+</body>
+</html>
