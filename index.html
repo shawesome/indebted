@@ -1,16 +1,62 @@
-<html>
-<head>
-    <title>Indebted</title>
-</head>
-<body>
-<ul>
+{% extends "base.html" %}
+{% block content %}
+<ul class="row">
     {% for guy in indebted %}
-    <li>
-        {{ guy.name }}
-        {{ guy.email }}
-        {{ guy.debt }}
-    </li>
+        <li class="span3">
+            <img src="{{ guy.image }}" alt="{{ guy.name }}"/>
+            <h2>&pound;{{ guy.debt }}</h2>
+        </li>
     {% endfor %}
 </ul>
-</body>
-</html>
+
+<form class="form-horizontal well">
+    <fieldset>
+        <legend>Add transaction</legend>
+        <div class="control-group">
+            <label class="control-label" for="buyer">Buyer</label>
+            <div class="controls">
+
+                <div class="buyer">
+                    {% for guy in indebted %}
+                    <input class="hide" type="radio" name="buyer" value="{{ guy.key().id() }}"/>
+                    <img src="{{ guy.image }}" alt="{{ guy.name }}"/>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="amount">Amount (&pound;)</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge" id="amount">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="reference">Reference</label>
+            <div class="controls">
+                <input type="text" class="input-xlarge" id="reference">
+            </div>
+        </div>
+
+        <div class="control-group">
+            <label class="control-label" for="buyees">Buyees</label>
+            <div class="controls">
+                <div class="buyees">
+                    {% for guy in indebted %}
+                        <input class="hide" type="radio" name="buyer" value="{{ guy.key().id() }}"/>
+                        <img src="{{ guy.image }}" alt="{{ guy.name }}"/>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </div>
+    </fieldset>
+</form>
+
+
+{% endblock %}
