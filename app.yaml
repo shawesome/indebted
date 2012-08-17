@@ -1,12 +1,18 @@
-application: debt
+application: meanbee-indebted
 version: 1
 runtime: python27
 api_version: 1
 threadsafe: true
 
 handlers:
+- url: /css
+  static_dir: css
+
+- url: /js
+  static_dir: js
+
 - url: /.*
-  script: debt.app
+  script: meanbee-indebted.app
 
 libraries:
 - name: jinja2
