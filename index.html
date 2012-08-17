@@ -9,9 +9,49 @@
     {% endfor %}
 </ul>
 
+{% if transactions %}
+    <h2>Transaction History</h2>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Buyer</th>
+                <th>Reference</th>
+                <th>Buyees</th>
+                <th>Amount</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.buyer.name }}</td>
+                    <td>{{ transaction.reference }}</td>
+                    <td>
+                        {% for buyee in transaction.buyees %}
+                            {{ buyee.name }}
+                        {% endfor %}
+                    </td>
+                    <td>&pound;{{ "{0:.2f}".format(transaction.amount) }}</td>
+                    <td>{{ transaction.date }}</td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>&nbsp;</td>
+                <td>
+                    <a href="/history">View all transactions</a>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+{% endif %}
+
+
 <form class="form-horizontal well" action="/add_transaction" method="POST">
+    <h2>Add transaction</h2>
     <fieldset>
-        <legend>Add transaction</legend>
         <div class="control-group">
             <label class="control-label" for="buyer">Buyer</label>
             <div class="controls">

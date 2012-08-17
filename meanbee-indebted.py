@@ -23,12 +23,46 @@ class Transaction(db.Model):
     reference = db.StringProperty()
     buyer_id = db.IntegerProperty()
     buyee_ids = db.ListProperty(item_type=int)
+    amount = db.FloatProperty()
+    date = db.DateTimeProperty(auto_now_add=True)
+
+
+def loadTransactions(count=False):
+    transactions = []
+    transactionModels = None
+    if count:
+        transactionModels = Transaction.all().order('-date').fetch(count)
+    else:
+        transactionModels = Transaction.all().order('-date')
+
+    for transactionModel in transactionModels:
+        transaction = {
+            'buyer': Indebted.get_by_id(transactionModel.buyer_id),
+            'buyees': map(lambda x:Indebted.get_by_id(x), transactionModel.buyee_ids),
+            'reference': transactionModel.reference,
+            'amount': transactionModel.amount,
+            'date': transactionModel.date
+        }
+        transactions.append(transaction)
+    return transactions
+
+
+class HistoryPage(webapp2.RequestHandler):
+    def get(self):
+        template_values = {
+            'transactions': loadTransactions()
+        }
+
+        template = jinja_environment.get_template('history.html')
+        self.response.out.write(template.render(template_values))
 
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
+      transactions =  loadTransactions(10)
       template_values = {
-          'indebted': Indebted.all()
+          'indebted': Indebted.all(),
+          'transactions': transactions
       }
 
       template = jinja_environment.get_template('index.html')
@@ -68,11 +102,12 @@ class AddTransaction(webapp2.RequestHandler):
             buyee.decrease_balance(balance_modification)
             buyee.put()
 
-    def add_transaction(self, buyee_ids, buyer_id, reference):
+    def add_transaction(self, buyee_ids, buyer_id, reference, amount):
         transaction = Transaction()
-        transaction.buyer_id = buyer_id
+        transaction.buyer_id = int(buyer_id)
         transaction.buyee_ids = buyee_ids
         transaction.reference = reference
+        transaction.amount = amount
         transaction.put()
 
     def post(self):
@@ -82,12 +117,13 @@ class AddTransaction(webapp2.RequestHandler):
         buyee_ids  = map(lambda x:int(x), self.request.get("buyees", allow_multiple=True))
 
         self.update_balances(amount, buyee_ids, buyer_id)
-        self.add_transaction(buyee_ids, buyer_id, reference)
+        self.add_transaction(buyee_ids, buyer_id, reference, amount)
 
         self.redirect('/')
 
 app = webapp2.WSGIApplication([
     ('/', MainPage),
+    ('/history', HistoryPage),
     ('/add_transaction', AddTransaction),
     ('/create_user', CreateUser),
 ], debug=True)
