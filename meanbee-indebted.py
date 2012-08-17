@@ -19,6 +19,12 @@ class Indebted(db.Model):
   def increase_balance(self, amount):
       self.balance += amount
 
+class Transaction(db.Model):
+    reference = db.StringProperty()
+    buyer_id = db.IntegerProperty()
+    buyee_ids = db.ListProperty(item_type=int)
+
+
 class MainPage(webapp2.RequestHandler):
   def get(self):
       template_values = {
@@ -49,18 +55,11 @@ class CreateUser(webapp2.RequestHandler):
 
 
 class AddTransaction(webapp2.RequestHandler):
-    def post(self):
-        buyer_id   = int(self.request.get("buyer"))
-        amount     = float(self.request.get("amount"))
-        reference  = self.request.get("reference")
-        buyee_ids  = map(lambda x:int(x), self.request.get("buyees", allow_multiple=True))
-
+    def update_balances(self, amount, buyee_ids, buyer_id):
         balance_modification = amount / len(buyee_ids)
-
         buyer = Indebted.get_by_id(buyer_id)
         buyer.increase_balance(balance_modification)
         buyer.put()
-
         for buyee_id in buyee_ids:
             if buyee_id == buyer_id:
                 # Ignore charging the buyer
@@ -68,6 +67,22 @@ class AddTransaction(webapp2.RequestHandler):
             buyee = Indebted.get_by_id(buyee_id)
             buyee.decrease_balance(balance_modification)
             buyee.put()
+
+    def add_transaction(self, buyee_ids, buyer_id, reference):
+        transaction = Transaction()
+        transaction.buyer_id = buyer_id
+        transaction.buyee_ids = buyee_ids
+        transaction.reference = reference
+        transaction.put()
+
+    def post(self):
+        buyer_id   = int(self.request.get("buyer"))
+        amount     = float(self.request.get("amount"))
+        reference  = self.request.get("reference")
+        buyee_ids  = map(lambda x:int(x), self.request.get("buyees", allow_multiple=True))
+
+        self.update_balances(amount, buyee_ids, buyer_id)
+        self.add_transaction(buyee_ids, buyer_id, reference)
 
         self.redirect('/')
 
