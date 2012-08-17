@@ -7,3 +7,12 @@ body > div.container {
     margin-right: auto;
     margin-left: auto;
 }
+
+.controls img {
+    margin: 3px;
+}
+
+.controls img.selected {
+    margin: 0;
+    border: 3px yellow solid;
+}

@@ -18,8 +18,8 @@
 
                 <div class="buyer">
                     {% for guy in indebted %}
-                    <input class="hide" type="radio" name="buyer" value="{{ guy.key().id() }}"/>
-                    <img src="{{ guy.image }}" alt="{{ guy.name }}"/>
+                        <input class="hide" type="radio" name="buyer" value="{{ guy.key().id() }}"/>
+                        <img src="{{ guy.image }}" alt="{{ guy.name }}"/>
                     {% endfor %}
                 </div>
 
@@ -45,7 +45,7 @@
             <div class="controls">
                 <div class="buyees">
                     {% for guy in indebted %}
-                        <input class="hide" type="radio" name="buyer" value="{{ guy.key().id() }}"/>
+                        <input class="hide" type="checkbox" name="buyer" value="{{ guy.key().id() }}"/>
                         <img src="{{ guy.image }}" alt="{{ guy.name }}"/>
                     {% endfor %}
                 </div>
