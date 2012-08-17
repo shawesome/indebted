@@ -32,7 +32,7 @@
                         {% endfor %}
                     </td>
                     <td>&pound;{{ "{0:.2f}".format(transaction.amount) }}</td>
-                    <td>{{ transaction.date }}</td>
+                    <td>{{ transaction.date.strftime('%d %B %Y') }}</td>
                 </tr>
             {% endfor %}
             <tr>
