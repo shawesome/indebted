@@ -1,0 +1,9 @@
+body {
+    padding-top: 90px;
+}
+
+body > div.container {
+    width: 940px;
+    margin-right: auto;
+    margin-left: auto;
+}
