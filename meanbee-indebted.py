@@ -7,17 +7,17 @@ jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.di
 from google.appengine.ext import db
 
 class Indebted(db.Model):
-  """Models a poor individual who finds themselves in debt."""
+  """Models a poor individual who finds themselves in balance."""
   name = db.StringProperty()
   image = db.StringProperty()
   email = db.EmailProperty()
-  debt = db.FloatProperty()
+  balance = db.FloatProperty()
 
-  def decrease_debt(self, amount):
-      self.debt -= amount
+  def decrease_balance(self, amount):
+      self.balance -= amount
 
-  def increase_debt(self, amount):
-      self.debt += amount
+  def increase_balance(self, amount):
+      self.balance += amount
 
 class MainPage(webapp2.RequestHandler):
   def get(self):
@@ -41,7 +41,7 @@ class CreateUser(webapp2.RequestHandler):
             i.name = name
             i.email = email
             i.image = image
-            i.debt = 0.0
+            i.balance = 0.0
             i.put()
             self.response.out.write('{status: "OK"}')
         else:
@@ -55,10 +55,10 @@ class AddTransaction(webapp2.RequestHandler):
         reference  = self.request.get("reference")
         buyee_ids  = map(lambda x:int(x), self.request.get("buyees", allow_multiple=True))
 
-        debt_modification = amount / len(buyee_ids)
+        balance_modification = amount / len(buyee_ids)
 
         buyer = Indebted.get_by_id(buyer_id)
-        buyer.decrease_debt(debt_modification)
+        buyer.increase_balance(balance_modification)
         buyer.put()
 
         for buyee_id in buyee_ids:
@@ -66,7 +66,7 @@ class AddTransaction(webapp2.RequestHandler):
                 # Ignore charging the buyer
                 continue
             buyee = Indebted.get_by_id(buyee_id)
-            buyee.increase_debt(debt_modification)
+            buyee.decrease_balance(balance_modification)
             buyee.put()
 
         self.redirect('/')

@@ -4,7 +4,7 @@
     {% for guy in indebted %}
         <li class="span3">
             <img src="{{ guy.image }}" alt="{{ guy.name }}"/>
-            <h2>&pound;{{ guy.debt }}</h2>
+            <h2>&pound;{{ "{0:.2f}".format(guy.balance) }}</h2>
         </li>
     {% endfor %}
 </ul>
