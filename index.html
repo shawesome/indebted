@@ -9,7 +9,7 @@
     {% endfor %}
 </ul>
 
-<form class="form-horizontal well">
+<form class="form-horizontal well" action="/add_transaction" method="POST">
     <fieldset>
         <legend>Add transaction</legend>
         <div class="control-group">
@@ -29,14 +29,14 @@
         <div class="control-group">
             <label class="control-label" for="amount">Amount (&pound;)</label>
             <div class="controls">
-                <input type="text" class="input-xlarge" id="amount">
+                <input type="text" class="input-xlarge" name="amount" id="amount">
             </div>
         </div>
 
         <div class="control-group">
             <label class="control-label" for="reference">Reference</label>
             <div class="controls">
-                <input type="text" class="input-xlarge" id="reference">
+                <input type="text" class="input-xlarge" name="reference" id="reference">
             </div>
         </div>
 
@@ -45,7 +45,7 @@
             <div class="controls">
                 <div class="buyees">
                     {% for guy in indebted %}
-                        <input class="hide" type="checkbox" name="buyer" value="{{ guy.key().id() }}"/>
+                        <input class="hide" type="checkbox" name="buyees" value="{{ guy.key().id() }}"/>
                         <img src="{{ guy.image }}" alt="{{ guy.name }}"/>
                     {% endfor %}
                 </div>
