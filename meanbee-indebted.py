@@ -5,6 +5,7 @@ import os
 jinja_environment = jinja2.Environment(loader=jinja2.FileSystemLoader(os.path.dirname(__file__)))
 
 from google.appengine.ext import db
+import json
 
 class Indebted(db.Model):
   """Models a poor individual who finds themselves in balance."""
@@ -121,10 +122,28 @@ class AddTransaction(webapp2.RequestHandler):
 
         self.redirect('/')
 
+class GetIndebtedInfo(webapp2.RequestHandler):
+    def get(self):
+        indebted = Indebted.all()
+        jsonArray = []
+        for i in indebted:
+            jsonArray.append({
+                'name': i.name,
+                'email': i.email,
+                'id': i.key().id(),
+                'balance': i.balance,
+                'image': i.image
+            })
+        self.response.headers['content-type'] = 'application/json'
+        self.response.out.write(json.dumps(jsonArray))
+
+
+
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/history', HistoryPage),
     ('/add_transaction', AddTransaction),
+    ('/get_indebted_info', GetIndebtedInfo),
     ('/create_user', CreateUser),
 ], debug=True)
 
