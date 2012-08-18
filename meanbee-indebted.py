@@ -120,6 +120,25 @@ class AddTransaction(webapp2.RequestHandler):
         self.update_balances(amount, buyee_ids, buyer_id)
         self.add_transaction(buyee_ids, buyer_id, reference, amount)
 
+class AddTransactionWithJson(AddTransaction):
+    def post(self):
+        self.response.headers['content-type'] = 'application/json'
+        status = {'status': 'OK'}
+        try:
+            super(AddTransactionWithJson, self).post()
+        except Exception as e:
+            status['status'] = 'FAIL'
+            status['reason'] = e.value
+
+
+        self.response.out.write(json.dumps(status))
+
+
+
+class AddTransactionWithRedirect(AddTransaction):
+    def post(self):
+        super(AddTransactionWithRedirect, self).post()
+
         self.redirect('/')
 
 class GetIndebtedInfo(webapp2.RequestHandler):
@@ -142,8 +161,9 @@ class GetIndebtedInfo(webapp2.RequestHandler):
 app = webapp2.WSGIApplication([
     ('/', MainPage),
     ('/history', HistoryPage),
-    ('/add_transaction', AddTransaction),
-    ('/get_indebted_info', GetIndebtedInfo),
+    ('/add_transaction', AddTransactionWithRedirect),
+    ('/api/add_transaction', AddTransactionWithJson),
+    ('/api/get_indebted_info', GetIndebtedInfo),
     ('/create_user', CreateUser),
 ], debug=True)
 
